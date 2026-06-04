@@ -1,0 +1,73 @@
+@model TicketFormViewModel
+@{
+    var isEdit = Model.Ticket.Id > 0;
+    ViewData["Title"] = isEdit ? "チケット編集" : "チケット登録";
+}
+
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">Ticket Form</p>
+        <h1>@ViewData["Title"]</h1>
+    </div>
+</section>
+
+<form class="form-panel" asp-action="@(isEdit ? "Edit" : "Create")" asp-route-id="@Model.Ticket.Id" method="post">
+    <input asp-for="Ticket.Id" type="hidden" />
+    <div asp-validation-summary="ModelOnly" class="validation"></div>
+
+    <label>
+        <span>件名</span>
+        <input asp-for="Ticket.Title" />
+        <small><span asp-validation-for="Ticket.Title"></span></small>
+    </label>
+
+    <label>
+        <span>問い合わせ内容</span>
+        <textarea asp-for="Ticket.Description" rows="7"></textarea>
+        <small><span asp-validation-for="Ticket.Description"></span></small>
+    </label>
+
+    <div class="form-grid">
+        <label>
+            <span>依頼者</span>
+            <input asp-for="Ticket.RequesterName" />
+            <small><span asp-validation-for="Ticket.RequesterName"></span></small>
+        </label>
+        <label>
+            <span>メールアドレス</span>
+            <input asp-for="Ticket.RequesterEmail" />
+            <small><span asp-validation-for="Ticket.RequesterEmail"></span></small>
+        </label>
+    </div>
+
+    <div class="form-grid">
+        <label>
+            <span>優先度</span>
+            <select asp-for="Ticket.Priority" asp-items="Html.GetEnumSelectList<TicketPriority>()"></select>
+        </label>
+        <label>
+            <span>ステータス</span>
+            <select asp-for="Ticket.Status" asp-items="Html.GetEnumSelectList<TicketStatus>()"></select>
+        </label>
+    </div>
+
+    <label>
+        <span>担当者</span>
+        <select asp-for="Ticket.AssignedAgentId">
+            <option value="">未割り当て</option>
+            @foreach (var agent in Model.Agents)
+            {
+                <option value="@agent.Id">@agent.Name（@agent.Department）</option>
+            }
+        </select>
+    </label>
+
+    <div class="actions">
+        <button class="button primary" type="submit">保存</button>
+        <a class="button ghost" asp-action="Index">一覧に戻る</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

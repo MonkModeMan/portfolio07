@@ -1,0 +1,76 @@
+@model TicketDashboardViewModel
+@{
+    ViewData["Title"] = "問い合わせ管理";
+}
+
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">Internal Support</p>
+        <h1>社内問い合わせ管理</h1>
+    </div>
+    <a class="button primary" asp-action="Create">チケット登録</a>
+</section>
+
+<section class="summary-grid">
+    @foreach (var item in Model.StatusCounts)
+    {
+        <article class="summary-card">
+            <span>@Display.Status(item.Key)</span>
+            <strong>@item.Value</strong>
+        </article>
+    }
+</section>
+
+<form class="filter-bar" method="get">
+    <input name="Keyword" value="@Model.Filter.Keyword" placeholder="件名・内容・依頼者で検索" />
+    <select name="Status">
+        <option value="">全ステータス</option>
+        @foreach (var status in Enum.GetValues<TicketStatus>())
+        {
+            <option value="@status" selected="@(Model.Filter.Status == status)">
+                @Display.Status(status)
+            </option>
+        }
+    </select>
+    <select name="AgentId">
+        <option value="">全担当者</option>
+        @foreach (var agent in Model.Agents)
+        {
+            <option value="@agent.Id" selected="@(Model.Filter.AgentId == agent.Id)">
+                @agent.Name（@agent.Department）
+            </option>
+        }
+    </select>
+    <button class="button" type="submit">絞り込み</button>
+    <a class="button ghost" asp-action="Index">クリア</a>
+</form>
+
+<section class="ticket-list">
+    @foreach (var ticket in Model.Tickets)
+    {
+        var agent = Model.Agents.FirstOrDefault(item => item.Id == ticket.AssignedAgentId);
+        <article class="ticket-row">
+            <div>
+                <div class="row-meta">
+                    <span class="pill status-@ticket.Status.ToString().ToLowerInvariant()">@Display.Status(ticket.Status)</span>
+                    <span class="priority priority-@ticket.Priority.ToString().ToLowerInvariant()">@Display.Priority(ticket.Priority)</span>
+                </div>
+                <h2><a asp-action="Details" asp-route-id="@ticket.Id">@ticket.Title</a></h2>
+                <p>@ticket.Description</p>
+            </div>
+            <aside>
+                <span>依頼者</span>
+                <strong>@ticket.RequesterName</strong>
+                <span>担当者</span>
+                <strong>@(agent?.Name ?? "未割り当て")</strong>
+                <span>更新</span>
+                <strong>@ticket.UpdatedAt.ToString("yyyy/MM/dd HH:mm")</strong>
+            </aside>
+        </article>
+    }
+</section>
+
+@if (!Model.Tickets.Any())
+{
+    <div class="empty">条件に一致するチケットはありません。</div>
+}

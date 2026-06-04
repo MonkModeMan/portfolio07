@@ -1,0 +1,18 @@
+@{
+    ViewData["Title"] = "エラー";
+}
+
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">Error</p>
+        <h1>処理中にエラーが発生しました</h1>
+    </div>
+</section>
+
+<div class="empty">
+    時間をおいて再度お試しください。
+    @if (ViewData["ErrorMessage"] is string message)
+    {
+        <span>@message</span>
+    }
+</div>

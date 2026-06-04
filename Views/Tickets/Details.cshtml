@@ -1,0 +1,43 @@
+@model TicketFormViewModel
+@{
+    ViewData["Title"] = "チケット詳細";
+    var ticket = Model.Ticket;
+    var agent = Model.Agents.FirstOrDefault(item => item.Id == ticket.AssignedAgentId);
+}
+
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">Ticket #@ticket.Id</p>
+        <h1>@ticket.Title</h1>
+    </div>
+    <div class="actions">
+        <a class="button" asp-action="Edit" asp-route-id="@ticket.Id">編集</a>
+        <form asp-action="Delete" asp-route-id="@ticket.Id" method="post">
+            <button class="button danger" type="submit">削除</button>
+        </form>
+    </div>
+</section>
+
+<article class="detail-layout">
+    <section class="detail-main">
+        <div class="row-meta">
+            <span class="pill status-@ticket.Status.ToString().ToLowerInvariant()">@Display.Status(ticket.Status)</span>
+            <span class="priority priority-@ticket.Priority.ToString().ToLowerInvariant()">@Display.Priority(ticket.Priority)</span>
+        </div>
+        <p>@ticket.Description</p>
+    </section>
+    <aside class="detail-side">
+        <dl>
+            <dt>依頼者</dt>
+            <dd>@ticket.RequesterName</dd>
+            <dt>メール</dt>
+            <dd>@(ticket.RequesterEmail ?? "-")</dd>
+            <dt>担当者</dt>
+            <dd>@(agent is null ? "未割り当て" : $"{agent.Name} / {agent.Department}")</dd>
+            <dt>作成日時</dt>
+            <dd>@ticket.CreatedAt.ToString("yyyy/MM/dd HH:mm")</dd>
+            <dt>更新日時</dt>
+            <dd>@ticket.UpdatedAt.ToString("yyyy/MM/dd HH:mm")</dd>
+        </dl>
+    </aside>
+</article>

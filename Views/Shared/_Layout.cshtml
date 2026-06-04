@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - InquiryDesk</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" asp-controller="Tickets" asp-action="Index">InquiryDesk</a>
+        <nav>
+            <a asp-controller="Tickets" asp-action="Index">チケット一覧</a>
+            <a asp-controller="Tickets" asp-action="Create">新規登録</a>
+        </nav>
+    </header>
+    <main class="shell">
+        @if (TempData["Message"] is string message)
+        {
+            <div class="notice">@message</div>
+        }
+        @RenderBody()
+    </main>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
