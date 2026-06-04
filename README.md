@@ -51,3 +51,22 @@ dotnet run
 起動後、表示された `http://localhost:xxxx` または `https://localhost:xxxx` にアクセスします。
 
 この環境では `http://localhost:5052` または `https://localhost:7052` で起動確認しました。
+
+## Windowsログオン時の自動起動
+
+開発用PCで毎回 `dotnet run` する手間を減らしたい場合は、タスク スケジューラにログオン時起動を登録できます。
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\register-startup-task.ps1
+```
+
+登録後、次回ログオン時に `http://localhost:5052` で InquiryDesk が自動起動します。
+起動ログは `logs/` に出力されます。
+
+登録時に権限エラーが出る場合は、通常の PowerShell または VS Code ターミナルから同じコマンドを実行してください。
+
+解除する場合は以下を実行します。
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\unregister-startup-task.ps1
+```
