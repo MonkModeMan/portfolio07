@@ -1,17 +1,27 @@
 param(
     [string]$ProjectPath = (Resolve-Path (Join-Path $PSScriptRoot '..\InquiryDesk.csproj')).Path,
     [string]$WorkingDirectory = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path,
-    [string]$Urls = 'http://localhost:5052'
+    [string]$Urls = 'https://localhost:7052;http://localhost:5052'
 )
 
 $ErrorActionPreference = 'Stop'
 
-$uri = [Uri]$Urls
-$port = $uri.Port
-$existingListener = Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue
+$urlList = $Urls -split ';' | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+$ports = $urlList | ForEach-Object { ([Uri]$_).Port }
+$listeningPorts = @(
+    $ports | Where-Object {
+        Get-NetTCPConnection -LocalPort $_ -State Listen -ErrorAction SilentlyContinue
+    }
+)
 
-if ($existingListener) {
+if ($listeningPorts.Count -eq $ports.Count) {
     exit 0
+}
+
+if ($listeningPorts.Count -gt 0) {
+    $joinedPorts = $listeningPorts -join ', '
+    Write-Warning "InquiryDesk is already partially listening on port(s): $joinedPorts. Stop the existing process before starting with all URLs."
+    exit 1
 }
 
 $logDirectory = Join-Path $WorkingDirectory 'logs'
@@ -26,7 +36,7 @@ $arguments = @(
     '--project',
     "`"$ProjectPath`"",
     '--urls',
-    $Urls
+    "`"$Urls`""
 )
 
 Start-Process `

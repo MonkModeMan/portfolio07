@@ -60,7 +60,7 @@ dotnet run
 powershell -ExecutionPolicy Bypass -File .\scripts\register-startup-task.ps1
 ```
 
-登録後、次回ログオン時に `http://localhost:5052` で InquiryDesk が自動起動します。
+登録後、次回ログオン時に `https://localhost:7052` と `http://localhost:5052` で InquiryDesk が自動起動します。
 起動ログは `logs/` に出力されます。
 
 まずタスク スケジューラへの登録を試し、権限エラーになる場合はユーザーのスタートアップフォルダにショートカットを作成します。
